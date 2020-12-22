@@ -7,6 +7,7 @@ import (
 	"github.com/timrcoulson/gromit/calendar"
 	"github.com/timrcoulson/gromit/gmail"
 	"github.com/timrcoulson/gromit/guitar"
+	"github.com/timrcoulson/gromit/money"
 	"github.com/timrcoulson/gromit/news"
 	"github.com/timrcoulson/gromit/trello"
 	"io/ioutil"
@@ -43,6 +44,7 @@ func main()  {
 	modules = append(modules, &calendar.Calendar{})
 	modules = append(modules, &gmail.Gmail{})
 	modules = append(modules, &trello.Trello{})
+	modules = append(modules, &money.Money{})
 	modules = append(modules, &news.News{})
 	modules = append(modules, &guitar.Guitar{})
 
@@ -61,7 +63,6 @@ func main()  {
 	})
 	c.Start()
 
-
 	http.HandleFunc("/print", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 		print(daily())
@@ -69,7 +70,6 @@ func main()  {
 
 	http.HandleFunc("/today",func(w http.ResponseWriter, request *http.Request) {
 		w.Write([]byte(daily()))
-		w.WriteHeader(200)
 	})
 
 	log.Fatal(http.ListenAndServe(":" + os.Getenv("PORT"), nil))
@@ -85,7 +85,7 @@ func print(outputs string)  {
 
 	ioutil.WriteFile("/tmp/daily.txt", []byte(clean), 0644)
 
-	cmd := exec.Command("enscript", "--no-header", "-fCourier7", "/tmp/daily.txt","--pages", "1", "--non-printable-format=space", "-d", "default")
+	cmd := exec.Command("enscript", "--no-header", "-fCourier7", "/tmp/daily.txt","--pages", "1", "--non-printable-format=space", "-d", "default", "-DDuplex:true")
 
 	cmd.Stdin = strings.NewReader(strings.Replace(outputs, "\n", "\r\n", -1))
 	output, err := cmd.Output()

@@ -32,6 +32,7 @@ deploy:
 	ssh pi@raspberrypi.lan 'sudo -u root cp /home/pi/gromit.service /etc/systemd/system/gromit.service'
 	ssh pi@raspberrypi.lan 'sudo -u root systemctl daemon-reload'
 	ssh pi@raspberrypi.lan 'sudo -u root systemctl restart gromit'
+	ssh pi@raspberrypi.lan 'sudo -u root systemctl enable gromit'
 
 logs:
 	ssh pi@raspberrypi.lan 'sudo -u root journalctl -u gromit'

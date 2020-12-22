@@ -20,4 +20,3 @@ ENV PORT 8080
 CMD ["make", "run"]
 EXPOSE 8080
 EXPOSE 631
-

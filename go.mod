@@ -4,6 +4,8 @@ go 1.15
 
 require (
 	github.com/adlio/trello v1.8.0
+	github.com/billglover/starling v0.0.0-20180715112535-a40600f92020
+	github.com/google/uuid v1.1.2 // indirect
 	github.com/joho/godotenv v1.3.0
 	github.com/olekukonko/tablewriter v0.0.4
 	github.com/robfig/cron v1.2.0
