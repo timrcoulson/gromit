@@ -2,6 +2,8 @@
 
 all: | build-docker run-docker
 
+deps:
+	brew tap heroku/brew && brew install heroku
 build-docker:
 	docker build -t gromit .
 run-docker:
@@ -9,3 +11,5 @@ run-docker:
 run:
 	service cups start
 	go run ./main.go
+deploy:
+	git push heroku main

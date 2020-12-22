@@ -8,7 +8,7 @@ RUN cp /etc/cups/cupsd.conf /etc/cups/cupsd.conf.original
 RUN chmod a-w /etc/cups/cupsd.conf.original
 
 WORKDIR /src
-COPY go.* .
+COPY go.* ./
 RUN go mod download
 COPY . .
 CMD ["make", "run"]
