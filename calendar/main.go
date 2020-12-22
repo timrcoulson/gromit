@@ -132,7 +132,7 @@ func Bod() string {
 func init() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("No .env file")
 	}
 	// If modifying these scopes, delete your previously saved token.json.
 	config, err := google.ConfigFromJSON([]byte(os.Getenv("GOOGLE_JSON")), calendar.CalendarReadonlyScope)
