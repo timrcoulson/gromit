@@ -9,7 +9,6 @@ build-docker:
 run-docker:
 	docker run -it gromit
 run:
-	cupsctl --debug-logging
 	service cups start
 	go run ./main.go
 deploy:
