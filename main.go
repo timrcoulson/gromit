@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/subtle"
 	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/robfig/cron/v3"
@@ -64,34 +63,17 @@ func main()  {
 
 
 	http.HandleFunc("/print", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
 		print(daily())
+	})
+
+	http.HandleFunc("/today",func(w http.ResponseWriter, request *http.Request) {
+		w.Write([]byte(daily()))
 		w.WriteHeader(200)
 	})
 
-	http.HandleFunc("/today", BasicAuth(func(w http.ResponseWriter, request *http.Request) {
-		w.Write([]byte(daily()))
-		w.WriteHeader(200)
-	}, os.Getenv("USERNAME"), os.Getenv("PASSWORD"), "Please enter your username and password for this site"))
-
 	log.Fatal(http.ListenAndServe(":" + os.Getenv("PORT"), nil))
 }
-
-func BasicAuth(handler http.HandlerFunc, username, password, realm string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-
-		user, pass, ok := r.BasicAuth()
-
-		if !ok || subtle.ConstantTimeCompare([]byte(user), []byte(username)) != 1 || subtle.ConstantTimeCompare([]byte(pass), []byte(password)) != 1 {
-			w.Header().Set("WWW-Authenticate", `Basic realm="`+realm+`"`)
-			w.WriteHeader(401)
-			w.Write([]byte("Unauthorised.\n"))
-			return
-		}
-
-		handler(w, r)
-	}
-}
-
 
 func print(outputs string)  {
 	clean := strings.Map(func(r rune) rune {
