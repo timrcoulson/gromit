@@ -67,7 +67,7 @@ func main()  {
 		writer.WriteHeader(200)
 	}, os.Getenv("USERNAME"), os.Getenv("PASSWORD"), "Please enter your username and password for this site"))
 
-	log.Fatal(http.ListenAndServe(":80", nil))
+	log.Fatal(http.ListenAndServe(":" + os.Getenv("PORT"), nil))
 }
 
 func BasicAuth(handler http.HandlerFunc, username, password, realm string) http.HandlerFunc {
