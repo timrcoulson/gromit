@@ -84,6 +84,7 @@ func ParseHeaders(headers []*gmail.MessagePartHeader) map[string]string {
 // Retrieve a token, saves the token, then returns the generated client.
 func getClient(config *oauth2.Config) *http.Client {
 	if os.Getenv("GOOGLE_GMAIL_TOKEN") != "" {
+		log.Println("writing to file")
 		d1 := []byte(os.Getenv("GOOGLE_GMAIL_TOKEN"))
 		err := ioutil.WriteFile("gmail-token.json", d1, 0644)
 		if err != nil {

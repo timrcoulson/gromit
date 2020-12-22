@@ -1,15 +1,37 @@
 .DEFAULT_GOAL := all
 
-all: | build-docker run-docker
+dev: | build-docker run-docker
 
-deps:
-	brew tap heroku/brew && brew install heroku
 build-docker:
 	docker build -t gromit .
 run-docker:
 	docker run -it gromit
-run:
+
+local:
 	service cups start
-	go run ./main.go
+	go run .
+
+provision:
+	ssh-copy-id pi@raspberrypi.lan
+	scp provision.sh pi@raspberrypi.lan:/home/pi/provision.sh
+	ssh pi@raspberrypi.lan 'sudo -u root /home/pi/provision.sh'
+
 deploy:
-	git push heroku main
+	echo "Building binary"
+	env GOOS=linux GOARCH=arm GOARM=5 go build
+
+	echo "Stop service"
+	ssh pi@raspberrypi.lan 'sudo -u root systemctl stop gromit'
+
+	echo "Copying files"
+	scp gromit pi@raspberrypi.lan:/home/pi/gromit
+	scp gromit.service pi@raspberrypi.lan:/home/pi/gromit.service
+	scp .env pi@raspberrypi.lan:/home/pi/.env
+
+	echo "Starting service"
+	ssh pi@raspberrypi.lan 'sudo -u root cp /home/pi/gromit.service /etc/systemd/system/gromit.service'
+	ssh pi@raspberrypi.lan 'sudo -u root systemctl daemon-reload'
+	ssh pi@raspberrypi.lan 'sudo -u root systemctl restart gromit'
+
+logs:
+	ssh pi@raspberrypi.lan 'sudo -u root journalctl -u gromit'

@@ -62,9 +62,15 @@ func main()  {
 	})
 	c.Start()
 
-	http.HandleFunc("/", BasicAuth(func(writer http.ResponseWriter, request *http.Request) {
-		writer.Write([]byte(daily()))
-		writer.WriteHeader(200)
+
+	http.HandleFunc("/print", func(w http.ResponseWriter, r *http.Request) {
+		print(daily())
+		w.WriteHeader(200)
+	})
+
+	http.HandleFunc("/today", BasicAuth(func(w http.ResponseWriter, request *http.Request) {
+		w.Write([]byte(daily()))
+		w.WriteHeader(200)
 	}, os.Getenv("USERNAME"), os.Getenv("PASSWORD"), "Please enter your username and password for this site"))
 
 	log.Fatal(http.ListenAndServe(":" + os.Getenv("PORT"), nil))
@@ -94,14 +100,18 @@ func print(outputs string)  {
 		}
 		return -1
 	}, outputs)
-	// Send "Hello, world!" to the printer via a pipe
+
 	ioutil.WriteFile("/tmp/daily.txt", []byte(clean), 0644)
 
-	cmd := exec.Command("enscript", "--no-header", "-fCourier7", "/tmp/daily.txt","--pages", "1", "--non-printable-format=space")
+	cmd := exec.Command("enscript", "--no-header", "-fCourier7", "/tmp/daily.txt","--pages", "1", "--non-printable-format=space", "-d", "default")
 
 	cmd.Stdin = strings.NewReader(strings.Replace(outputs, "\n", "\r\n", -1))
+	output, err := cmd.Output()
 
-	cmd.Output()
+	if err != nil {
+		panic(err)
+	}
+	log.Println(string(output))
 
 	time.Sleep(5 * time.Second)
 }
