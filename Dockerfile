@@ -11,4 +11,6 @@ WORKDIR /src
 COPY go.* ./
 RUN go mod download
 COPY . .
+ENV PORT 8080
 CMD ["make", "run"]
+EXPOSE 8080

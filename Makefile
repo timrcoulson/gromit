@@ -7,8 +7,9 @@ deps:
 build-docker:
 	docker build -t gromit .
 run-docker:
-	docker run --net=host -it gromit
+	docker run -it gromit
 run:
+	cupsctl --debug-logging
 	service cups start
 	go run ./main.go
 deploy:
