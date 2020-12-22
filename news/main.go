@@ -56,5 +56,5 @@ func (c *News) Output() (output string)  {
 
 	table.Render()
 	// Get Everything with options from above
-	return "# News\n\n" + obuf.String()
+	return "# News\n\n" + obuf.String() + "\n"
 }
