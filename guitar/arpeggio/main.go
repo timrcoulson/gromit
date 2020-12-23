@@ -116,22 +116,13 @@ const (
 
 func (e ArpeggioPosition) String() string {
 	switch e {
-	case Dom7Pos1:
-	case Dom7Pos2:
-	case Dom7Pos3:
-	case Dom7Pos4:
-	case Dom7Pos5:
+	case Dom7Pos1, Dom7Pos2, Dom7Pos3, Dom7Pos4, Dom7Pos5:
 		return "Dominant 7"
-	case Maj7Pos1:
-	case Maj7Pos2:
-	case Maj7Pos3:
-	case Maj7Pos4:
-	case Maj7Pos5:
+	case Maj7Pos1, Maj7Pos2, Maj7Pos3, Maj7Pos4, Maj7Pos5:
 		return "Major 7"
 	default:
 		return "Unknown"
 	}
-	return ""
 }
 
 
