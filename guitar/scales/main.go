@@ -79,6 +79,26 @@ const (
 	Locrian
 )
 
+func (e Mode) String() string {
+	switch e {
+	case Ionian:
+		return "Ionian (1st)"
+	case Dorian:
+		return "Dorian (2nd)"
+	case Phygrian:
+		return "Phygrian (3rd)"
+	case Lydian:
+		return "Lydian (4th)"
+	case Mixolydian:
+		return "Mixolydian (5th)"
+	case Aeolian:
+		return "Aeolian (6th)"
+	case Locrian:
+		return "Locrian (7th)"
+	default:
+		return "Unknown"
+	}
+}
 
 func Scale(root int, mode Mode) string  {
 	var modeTemplate string

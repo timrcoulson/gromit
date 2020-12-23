@@ -63,7 +63,7 @@ func (m *Money) Output() string {
 		var balance Balance
 		json.Unmarshal(b, &balance)
 
-		table.Append([]string{a.Name, fmt.Sprintf("£%.2f", float32(balance.Amount.MinorUnits) / 100.0)})
+		table.Append([]string{a.Name, fmt.Sprintf("%.2f", float32(balance.Amount.MinorUnits) / 100.0)})
 	}
 
 	table.Render()

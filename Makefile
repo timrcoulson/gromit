@@ -16,6 +16,9 @@ provision:
 	scp provision.sh pi@raspberrypi.lan:/home/pi/provision.sh
 	ssh pi@raspberrypi.lan 'sudo -u root /home/pi/provision.sh'
 
+print:
+	curl http://raspberrypi.lan/print	
+
 deploy:
 	echo "Building binary"
 	env GOOS=linux GOARCH=arm GOARM=5 go build
