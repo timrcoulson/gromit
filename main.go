@@ -58,5 +58,5 @@ func main()  {
 	c.Start()
 
 	log.Print("Gromit running on " + host)
-	http.ListenAndServe(":" + os.Getenv("PORT"), nil)
+	log.Fatal(http.ListenAndServe(":" + os.Getenv("PORT"), nil))
 }

@@ -19,7 +19,10 @@ var (
 	state string
 	oauthConfig *oauth2.Config
 	client *http.Client
+	tokenSource *oauth2.TokenSource
 )
+var tok *oauth2.Token
+
 
 func New(redirectUri string) Google {
 	oauthConfig = &oauth2.Config{
@@ -72,14 +75,27 @@ func getUserDataFromGoogle(code string) (*oauth2.Token, error) {
 func init()  {
 	token, err := data.Get("google-token")
 	if err == nil {
-		tok := &oauth2.Token{}
-		err = json.NewDecoder(strings.NewReader(token)).Decode(tok)
-		client = oauthConfig.Client(context.Background(), tok)
+		err = json.NewDecoder(strings.NewReader(token)).Decode(&tok)
+
+		if err != nil {
+			panic(err)
+		}
+
+		if !tok.Valid() {
+			tokenSource := oauthConfig.TokenSource(oauth2.NoContext, tok)
+			client = oauth2.NewClient(oauth2.NoContext, tokenSource)
+
+			//tok, err = tokenSource.Token()
+		} else {
+
+			client = oauthConfig.Client(context.Background(), tok)
+		}
+
 	} else {
 		panic(err)
 	}
 }
 
-func Get() *http.Client {
-	return client
+func Get() (*http.Client, oauth2.TokenSource){
+	return client, oauthConfig.TokenSource(context.Background(), tok)
 }

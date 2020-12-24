@@ -28,7 +28,11 @@ func Print(outputs string) {
 		return -1
 	}, outputs)
 
-	ioutil.WriteFile("/etc/gromit/file.txt", []byte(clean), 0644)
+	err = ioutil.WriteFile("/etc/gromit/file.txt", []byte(clean), 0644)
+
+	if err != nil {
+		panic(err)
+	}
 
 	cmd := exec.Command("enscript", "--no-header", "-fCourier7", "/etc/gromit/file.txt","--pages", "1", "--non-printable-format=space", "-d", "default", "-DDuplex:true")
 

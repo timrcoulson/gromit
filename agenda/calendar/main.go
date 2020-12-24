@@ -2,10 +2,12 @@ package calendar
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
 	"github.com/timrcoulson/gromit/agenda/printing"
 	"github.com/timrcoulson/gromit/services/google"
+	"google.golang.org/api/option"
 	"log"
 	"time"
 
@@ -57,9 +59,13 @@ func Bod() string {
 }
 
 func init() {
-	client := google.Get()
+	_, ts := google.Get()
+
 	var err error
-	srv, err = calendar.New(client)
+	srv, err = calendar.NewService(context.Background(), option.WithTokenSource(ts))
+
+
+
 	if err != nil {
 		panic(err)
 	}
