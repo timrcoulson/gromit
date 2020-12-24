@@ -55,20 +55,6 @@ func main()  {
 		// Start the morning playlist
 		spotify.Play(os.Getenv("MORNING_PLAYLIST"))
 	})
-	c.AddFunc("57 00 * * *", func() {
-		// Print the agenda every day
-		printer.Print(agenda.Today())
-
-		// Start the morning playlist
-		spotify.Play(os.Getenv("MORNING_PLAYLIST"))
-	})
-	c.AddFunc("57 01 * * *", func() {
-		// Print the agenda every day
-		printer.Print(agenda.Today())
-
-		// Start the morning playlist
-		spotify.Play(os.Getenv("MORNING_PLAYLIST"))
-	})
 	c.Start()
 
 	log.Print("Gromit running on " + host)

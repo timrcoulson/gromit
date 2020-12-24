@@ -11,8 +11,8 @@ DEVICE_NAME="raspotify"
 OPTIONS="--username $SPOTIFY_USERNAME --password $SPOTIFY_PASSWORD"
 EndOfMessage
 
-mkdir /etc/grommit
-chmod -R a+rwX /etc/grommit
+mkdir /etc/gromit
+chmod -R a+rwX /etc/gromit
 
 systemctl restart raspotify
 systemctl enable raspotify

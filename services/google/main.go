@@ -75,6 +75,8 @@ func init()  {
 		tok := &oauth2.Token{}
 		err = json.NewDecoder(strings.NewReader(token)).Decode(tok)
 		client = oauthConfig.Client(context.Background(), tok)
+	} else {
+		panic(err)
 	}
 }
 

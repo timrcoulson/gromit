@@ -58,7 +58,11 @@ func Bod() string {
 
 func init() {
 	client := google.Get()
-	srv, _ = calendar.New(client)
+	var err error
+	srv, err = calendar.New(client)
+	if err != nil {
+		panic(err)
+	}
 }
 
 var srv *calendar.Service
