@@ -2,102 +2,58 @@ package main
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
+	"github.com/gorilla/mux"
 	"github.com/robfig/cron/v3"
-	"github.com/timrcoulson/gromit/calendar"
-	"github.com/timrcoulson/gromit/gmail"
-	"github.com/timrcoulson/gromit/guitar"
-	"github.com/timrcoulson/gromit/money"
-	"github.com/timrcoulson/gromit/news"
-	"github.com/timrcoulson/gromit/trello"
-	"io/ioutil"
+	"github.com/timrcoulson/gromit/agenda"
+	"github.com/timrcoulson/gromit/printer"
+	"github.com/timrcoulson/gromit/services/google"
+	"github.com/timrcoulson/gromit/services/spotify"
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
-	"strings"
-	"time"
-	"unicode"
 )
 
-const PrinterName = "default"
-
-func init()  {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Error loading .env file")
-	}
-}
-
 func main()  {
+	host := os.Getenv("HOST")
 	fmt.Println("Starting up gromit...")
 
-	// Add the printer
-	output, err := exec.Command("lpadmin", "-p", PrinterName, "-E", "-v", os.Getenv("PRINTER_TCP")).Output()
-	if err != nil {
-		log.Println(string(output))
-		panic(err)
-	}
+	// Authorise all the services
+	sp := spotify.New(host + "/auth/spotify")
+	gg := google.New(host + "/auth/google")
 
-	// Register modules
-	var modules []Module
-	modules = append(modules, &calendar.Calendar{})
-	modules = append(modules, &gmail.Gmail{})
-	modules = append(modules, &trello.Trello{})
-	modules = append(modules, &money.Money{})
-	modules = append(modules, &news.News{})
-	modules = append(modules, &guitar.Guitar{})
+	r := mux.NewRouter()
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(fmt.Sprintf(`
+		<h1>Gromit is running!</h1>
+		<a href="%s">Authorize Google</a>
+		<a href="%s">Authorize Spotify</a>
+		
+		`, gg.LoginUrl(), sp.LoginUrl())))
+	})
 
-	daily := func() string {
-		output := fmt.Sprintf("=== Good Morning, Tim. Today is %v ===\n\n", time.Now().Format("Monday 2 Jan 2006"))
-		for _, module := range modules {
-			output += module.Output()
-		}
+	r.HandleFunc("/spotify", func(writer http.ResponseWriter, request *http.Request) {
+		devices, _ := spotify.Get().PlayerDevices()
 
-		return output
-	}
+		writer.Write([]byte(devices[0].Name))
+	})
+	r.HandleFunc("/print", func(writer http.ResponseWriter, request *http.Request) {
+		writer.Write([]byte("printing"))
+		printer.Print(agenda.Today())
+	})
 
+	// Register oauth 2 callbacks
+	r.HandleFunc("/auth/spotify", sp.Callback)
+	r.HandleFunc("/auth/google", gg.Callback)
+
+	http.Handle("/", r)
+
+	// Print the agenda every day
 	c := cron.New()
 	c.AddFunc("00 06 * * *", func() {
-		print(daily())
+		printer.Print(agenda.Today())
 	})
 	c.Start()
 
-	http.HandleFunc("/print", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(200)
-		print(daily())
-	})
-
-	http.HandleFunc("/today",func(w http.ResponseWriter, request *http.Request) {
-		w.Write([]byte(daily()))
-	})
-
-	log.Fatal(http.ListenAndServe(":" + os.Getenv("PORT"), nil))
-}
-
-func print(outputs string)  {
-	clean := strings.Map(func(r rune) rune {
-		if unicode.IsPrint(r) || unicode.IsSpace(r) {
-			return r
-		}
-		return -1
-	}, outputs)
-
-	ioutil.WriteFile("/tmp/daily.txt", []byte(clean), 0644)
-
-	cmd := exec.Command("enscript", "--no-header", "-fCourier7", "/tmp/daily.txt","--pages", "1", "--non-printable-format=space", "-d", "default", "-DDuplex:true")
-
-	cmd.Stdin = strings.NewReader(strings.Replace(outputs, "\n", "\r\n", -1))
-	output, err := cmd.Output()
-
-	if err != nil {
-		panic(err)
-	}
-	log.Println(string(output))
-
-	time.Sleep(5 * time.Second)
-}
-
-type Module interface {
-	Output() string
+	log.Print("Gromit running on http://localhost:" + os.Getenv("PORT"))
+	http.ListenAndServe(":" + os.Getenv("PORT"), nil)
 }

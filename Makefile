@@ -9,7 +9,7 @@ run-docker:
 
 local:
 	service cups start
-	go run .
+	HOST=http://localhost go run .
 
 provision:
 	ssh-copy-id pi@raspberrypi.lan
