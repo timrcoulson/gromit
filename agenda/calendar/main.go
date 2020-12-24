@@ -64,8 +64,6 @@ func init() {
 	var err error
 	srv, err = calendar.NewService(context.Background(), option.WithTokenSource(ts))
 
-
-
 	if err != nil {
 		panic(err)
 	}
