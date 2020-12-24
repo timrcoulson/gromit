@@ -14,10 +14,7 @@ import (
 )
 
 func main()  {
-	devices, _ := spotify.Get().PlayerDevices()
-	log.Println(devices)
-	return
-	host := os.Getenv("HOST")
+	host := os.Getenv("HOST") + ":" + os.Getenv("PORT")
 	fmt.Println("Starting up gromit...")
 
 	// Authorise all the services
@@ -58,8 +55,22 @@ func main()  {
 		// Start the morning playlist
 		spotify.Play(os.Getenv("MORNING_PLAYLIST"))
 	})
+	c.AddFunc("57 00 * * *", func() {
+		// Print the agenda every day
+		printer.Print(agenda.Today())
+
+		// Start the morning playlist
+		spotify.Play(os.Getenv("MORNING_PLAYLIST"))
+	})
+	c.AddFunc("57 01 * * *", func() {
+		// Print the agenda every day
+		printer.Print(agenda.Today())
+
+		// Start the morning playlist
+		spotify.Play(os.Getenv("MORNING_PLAYLIST"))
+	})
 	c.Start()
 
-	log.Print("Gromit running on http://localhost:" + os.Getenv("PORT"))
+	log.Print("Gromit running on " + host)
 	http.ListenAndServe(":" + os.Getenv("PORT"), nil)
 }

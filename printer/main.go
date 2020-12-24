@@ -28,9 +28,9 @@ func Print(outputs string) {
 		return -1
 	}, outputs)
 
-	ioutil.WriteFile("/tmp/file.txt", []byte(clean), 0644)
+	ioutil.WriteFile("/etc/grommit/file.txt", []byte(clean), 0644)
 
-	cmd := exec.Command("enscript", "--no-header", "-fCourier7", "/tmp/file.txt","--pages", "1", "--non-printable-format=space", "-d", "default", "-DDuplex:true")
+	cmd := exec.Command("enscript", "--no-header", "-fCourier7", "/etc/grommit/file.txt","--pages", "1", "--non-printable-format=space", "-d", "default", "-DDuplex:true")
 
 	cmd.Stdin = strings.NewReader(strings.Replace(outputs, "\n", "\r\n", -1))
 	o, err := cmd.Output()

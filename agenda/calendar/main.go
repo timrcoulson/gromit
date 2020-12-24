@@ -27,6 +27,7 @@ func (c *Calendar) Output() (output string)  {
 	if err != nil {
 		log.Fatalf("Unable to retrieve next ten of the user's events: %v", err)
 	}
+
 	if len(events.Items) == 0 {
 		fmt.Println("No upcoming events found.")
 	} else {
@@ -57,11 +58,7 @@ func Bod() string {
 
 func init() {
 	client := google.Get()
-	var err error
-	srv, err = calendar.New(client)
-	if err != nil {
-		log.Fatalf("Unable to retrieve Calendar client: %v", err)
-	}
+	srv, _ = calendar.New(client)
 }
 
 var srv *calendar.Service

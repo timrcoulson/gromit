@@ -73,11 +73,7 @@ func ParseHeaders(headers []*gmail.MessagePartHeader) map[string]string {
 
 func init() {
 	client := google.Get()
-	var err error
-	srv, err = gmail.New(client)
-	if err != nil {
-		log.Fatalf("Unable to retrieve gmail client: %v", err)
-	}
+	srv, _ = gmail.New(client)
 }
 
 var srv *gmail.Service

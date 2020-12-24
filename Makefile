@@ -29,8 +29,9 @@ deploy:
 
 	echo "Copying files"
 	scp gromit pi@raspberrypi.lan:/home/pi/gromit
-	scp gromit.service pi@raspberrypi.lan:/home/pi/gromit.service
+	scp conf/gromit.service pi@raspberrypi.lan:/home/pi/gromit.service
 	scp .env pi@raspberrypi.lan:/home/pi/.env
+	rm gromit
 
 	echo "Starting service"
 	ssh pi@raspberrypi.lan 'sudo -u root cp /home/pi/gromit.service /etc/systemd/system/gromit.service'
