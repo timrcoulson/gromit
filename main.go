@@ -32,9 +32,8 @@ func main()  {
 	})
 
 	r.HandleFunc("/spotify", func(writer http.ResponseWriter, request *http.Request) {
-		devices, _ := spotify.Get().PlayerDevices()
-
-		writer.Write([]byte(devices[0].Name))
+		spotify.Play(os.Getenv("MORNING_PLAYLIST"))
+		writer.Write([]byte("playing morning"))
 	})
 	r.HandleFunc("/print", func(writer http.ResponseWriter, request *http.Request) {
 		writer.Write([]byte("printing"))

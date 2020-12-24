@@ -12,14 +12,31 @@ import (
 )
 
 var (
-	auth spotify.Authenticator
+	auth *spotify.Authenticator
 	client *spotify.Client
 	state string
 )
 
 func New(redirectUri string) Spotify {
 	state = "abc123"
-	auth  = spotify.NewAuthenticator(redirectUri, spotify.ScopeUserReadPrivate, spotify.ScopeUserReadPlaybackState, spotify.ScopeUserModifyPlaybackState)
+	authV := spotify.NewAuthenticator(redirectUri, spotify.ScopeUserReadPrivate, spotify.ScopeUserReadPlaybackState, spotify.ScopeUserModifyPlaybackState)
+	auth = &authV
+
+	token, err := data.Get("spotify-token")
+	if err == nil {
+		tok := &oauth2.Token{}
+		err = json.NewDecoder(strings.NewReader(token)).Decode(tok)
+
+		if err != nil {
+			panic(err)
+		}
+
+		clientV := auth.NewClient(tok)
+		client = &clientV
+	} else {
+		panic(err)
+	}
+
 
 	return Spotify{}
 }
@@ -54,21 +71,10 @@ func Get() *spotify.Client {
 
 func Play(uri string)  {
 	devices, _ := client.PlayerDevices()
-
 	for _, d := range devices {
 		if d.Name == os.Getenv("SPOTIFY_DEVICE") {
 			playlist := spotify.URI(uri)
 			client.PlayOpt(&spotify.PlayOptions{DeviceID: &d.ID, PlaybackContext: &playlist})
 		}
-	}
-}
-
-func init()  {
-	token, err := data.Get("spotify-token")
-	if err == nil {
-		tok := &oauth2.Token{}
-		err = json.NewDecoder(strings.NewReader(token)).Decode(tok)
-		clientV := auth.NewClient(tok)
-		client = &clientV
 	}
 }
