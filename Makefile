@@ -14,7 +14,8 @@ local:
 provision:
 	ssh-copy-id pi@raspberrypi.lan
 	scp provision.sh pi@raspberrypi.lan:/home/pi/provision.sh
-	ssh pi@raspberrypi.lan 'sudo -u root /home/pi/provision.sh'
+
+	ssh pi@raspberrypi.lan 'sudo -u root  /home/pi/provision.sh'
 
 print:
 	curl http://raspberrypi.lan/print	

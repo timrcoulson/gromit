@@ -1,0 +1,2 @@
+DEVICE_NAME="raspotify"
+OPTIONS="--username $SPOTIFY_USERNAME --password $SPOTIFY_PASSWORD"

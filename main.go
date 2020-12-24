@@ -14,6 +14,9 @@ import (
 )
 
 func main()  {
+	devices, _ := spotify.Get().PlayerDevices()
+	log.Println(devices)
+	return
 	host := os.Getenv("HOST")
 	fmt.Println("Starting up gromit...")
 
@@ -47,10 +50,13 @@ func main()  {
 
 	http.Handle("/", r)
 
-	// Print the agenda every day
 	c := cron.New()
 	c.AddFunc("00 06 * * *", func() {
+		// Print the agenda every day
 		printer.Print(agenda.Today())
+
+		// Start the morning playlist
+		spotify.Play(os.Getenv("MORNING_PLAYLIST"))
 	})
 	c.Start()
 

@@ -7,6 +7,7 @@ import (
 	"golang.org/x/oauth2"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -49,6 +50,17 @@ func (s *Spotify) Callback(w http.ResponseWriter, r *http.Request)  {
 
 func Get() *spotify.Client {
 	return client
+}
+
+func Play(uri string)  {
+	devices, _ := client.PlayerDevices()
+
+	for _, d := range devices {
+		if d.Name == os.Getenv("SPOTIFY_DEVICE") {
+			playlist := spotify.URI(uri)
+			client.PlayOpt(&spotify.PlayOptions{DeviceID: &d.ID, PlaybackContext: &playlist})
+		}
+	}
 }
 
 func init()  {
