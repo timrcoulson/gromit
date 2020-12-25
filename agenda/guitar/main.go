@@ -13,7 +13,7 @@ type Guitar struct {
 
 func (g *Guitar) Output() string {
 	mode := scales.Mode(rand.Intn(7))
-	arpeggioType := arpeggio.ArpeggioPosition(rand.Intn(9))
+	arpeggioType := arpeggio.ArpeggioPosition(rand.Intn(16))
 	randomScale := scales.Scale(rand.Intn(12), mode)
 	randomArpeggio := arpeggio.Arpeggio(rand.Intn(12), arpeggioType)
 
