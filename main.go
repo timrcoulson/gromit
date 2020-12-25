@@ -5,6 +5,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/robfig/cron/v3"
 	"github.com/timrcoulson/gromit/agenda"
+	"github.com/timrcoulson/gromit/agenda/calendar"
+	"github.com/timrcoulson/gromit/agenda/gmail"
 	"github.com/timrcoulson/gromit/printer"
 	"github.com/timrcoulson/gromit/services/google"
 	"github.com/timrcoulson/gromit/services/spotify"
@@ -21,6 +23,10 @@ func main()  {
 	sp := spotify.New(host + "/auth/spotify")
 	gg := google.New(host + "/auth/google")
 
+	// Init other stuff
+	calendar.Init()
+	gmail.Init()
+
 	r := mux.NewRouter()
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(fmt.Sprintf(`
@@ -31,6 +37,8 @@ func main()  {
 		`, gg.LoginUrl(), sp.LoginUrl())))
 	})
 
+	agenda.Today()
+
 	r.HandleFunc("/spotify", func(writer http.ResponseWriter, request *http.Request) {
 		spotify.Play(os.Getenv("MORNING_PLAYLIST"))
 		writer.Write([]byte("playing morning"))
@@ -38,6 +46,9 @@ func main()  {
 	r.HandleFunc("/print", func(writer http.ResponseWriter, request *http.Request) {
 		writer.Write([]byte("printing"))
 		printer.Print(agenda.Today())
+	})
+	r.HandleFunc("/agenda", func(writer http.ResponseWriter, request *http.Request) {
+		writer.Write([]byte(agenda.Today()))
 	})
 
 	// Register oauth 2 callbacks

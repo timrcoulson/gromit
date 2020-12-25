@@ -2,12 +2,10 @@ package gmail
 
 import (
 	"bytes"
-	"context"
 	"github.com/olekukonko/tablewriter"
 	"github.com/timrcoulson/gromit/agenda/printing"
 	"github.com/timrcoulson/gromit/services/google"
 	"google.golang.org/api/gmail/v1"
-	"google.golang.org/api/option"
 	"log"
 	"net/mail"
 )
@@ -17,6 +15,15 @@ const SubjectWidth = 80
 
 type Gmail struct {
 
+}
+
+func Init() Gmail {
+	var err error
+	srv, err = gmail.New(google.Get())
+	if err != nil {
+		panic(err)
+	}
+	return Gmail{}
 }
 
 func (c *Gmail) Output() (output string)  {
@@ -75,16 +82,6 @@ func ParseHeaders(headers []*gmail.MessagePartHeader) map[string]string {
 		headersMap[header.Name] = header.Value
 	}
 	return headersMap
-}
-
-func init() {
-	_, ts := google.Get()
-	var err error
-
-	srv, err = gmail.NewService(context.Background(), option.WithTokenSource(ts))
-	if err != nil {
-		panic(err)
-	}
 }
 
 var srv *gmail.Service

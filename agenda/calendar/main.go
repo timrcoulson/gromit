@@ -2,12 +2,10 @@ package calendar
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
 	"github.com/timrcoulson/gromit/agenda/printing"
 	"github.com/timrcoulson/gromit/services/google"
-	"google.golang.org/api/option"
 	"log"
 	"time"
 
@@ -16,6 +14,17 @@ import (
 
 type Calendar struct {
 
+}
+
+var srv *calendar.Service
+
+func Init() Calendar {
+	var err error
+	srv, err = calendar.New(google.Get())
+	if err != nil {
+		panic(err)
+	}
+	return Calendar{}
 }
 
 func (c *Calendar) Output() (output string)  {
@@ -57,16 +66,3 @@ func Bod() string {
 	year, month, day := time.Now().Date()
 	return time.Date(year, month, day, 0, 0, 0, 0,  time.Now().Location()).Format(time.RFC3339)
 }
-
-func init() {
-	_, ts := google.Get()
-
-	var err error
-	srv, err = calendar.NewService(context.Background(), option.WithTokenSource(ts))
-
-	if err != nil {
-		panic(err)
-	}
-}
-
-var srv *calendar.Service
