@@ -11,11 +11,15 @@ import (
 	"github.com/timrcoulson/gromit/services/google"
 	"github.com/timrcoulson/gromit/services/spotify"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
+	"time"
 )
 
 func main()  {
+	rand.Seed(time.Now().UnixNano())
+
 	host := os.Getenv("HOST") + ":" + os.Getenv("PORT")
 	fmt.Println("Starting up gromit...")
 
