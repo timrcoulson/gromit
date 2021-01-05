@@ -8,6 +8,7 @@ import (
 	"github.com/timrcoulson/gromit/agenda/guitar"
 	"github.com/timrcoulson/gromit/agenda/money"
 	"github.com/timrcoulson/gromit/agenda/news"
+	"github.com/timrcoulson/gromit/agenda/stretch"
 	"github.com/timrcoulson/gromit/agenda/trello"
 	"log"
 	"time"
@@ -18,6 +19,7 @@ func Today() string  {
 
 	// Register modules
 	var modules []Module
+	modules = append(modules, &stretch.Stretch{})
 	modules = append(modules, &calendar.Calendar{})
 	modules = append(modules, &gmail.Gmail{})
 	modules = append(modules, &trello.Trello{})

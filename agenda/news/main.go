@@ -8,13 +8,14 @@ import (
 	"net/http"
 	"os"
 	"github.com/robtec/newsapi/api"
+	"strings"
 )
 
 type News struct {
 
 }
 
-const HeadlineWidth = 90
+const HeadlineWidth = 110
 
 
 func (c *News) Output() (output string)  {
@@ -29,7 +30,7 @@ func (c *News) Output() (output string)  {
 	}
 
 	// Create options for Ireland and Business'
-	opts := api.Options{Country: "gb", PageSize: 3, Page: 1, SortBy: "popularity"}
+	opts := api.Options{Country: "gb", PageSize: 10, Page: 1, SortBy: "popularity"}
 
 	// Get Top Headlines with options from above
 	topHeadlines, err := client.TopHeadlines(opts)
@@ -41,20 +42,34 @@ func (c *News) Output() (output string)  {
 	table := tablewriter.NewWriter(obuf)
 
 	table.SetColMinWidth(0, HeadlineWidth)
-	table.SetHeader([]string{"Title", "Published At"})
+	table.SetHeader([]string{"Title"})
 	table.SetAutoWrapText(false)
 
-	for _, headline := range topHeadlines.Articles[:3] {
+	for _, headline := range topHeadlines.Articles[:10] {
 		title :=  printing.Clean(headline.Title)
+
+		if shouldFilter(headline.Title) {
+			continue
+		}
 
 		if len(title) > HeadlineWidth {
 			title = title[:HeadlineWidth]
 		}
 
-		table.Append([]string{title, headline.PublishedAt})
+		table.Append([]string{title})
 	}
 
 	table.Render()
 	// Get Everything with options from above
 	return "# News\n\n" + obuf.String() + "\n"
+}
+
+func shouldFilter(headline string) bool {
+	// Filter out football ha
+	for _, footballTerm := range []string{"Liverpool", "Man City", "Football", "Tottenham", "Arsenal"} {
+		if strings.Contains(headline, footballTerm) {
+			return true
+		}
+	}
+	return false
 }
