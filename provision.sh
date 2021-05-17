@@ -8,9 +8,10 @@ curl -sL https://dtcooper.github.io/raspotify/install.sh | sh
 
 cat > /etc/default/raspotify <<- EndOfMessage
 DEVICE_NAME="raspotify"
-OPTIONS="--username $SPOTIFY_USERNAME --password $SPOTIFY_PASSWORD"
+OPTIONS="--username tim.r.coulson --password VTvtQNyXpDbgwA8k9Etvd6Ke"
 EndOfMessage
 
+rm -rf /etc/gromit
 mkdir /etc/gromit
 chmod -R a+rwX /etc/gromit
 

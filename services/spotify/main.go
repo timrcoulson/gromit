@@ -6,9 +6,12 @@ import (
 	"github.com/zmb3/spotify"
 	"golang.org/x/oauth2"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 )
 
 var (
@@ -34,7 +37,7 @@ func New(redirectUri string) Spotify {
 		clientV := auth.NewClient(tok)
 		client = &clientV
 	} else {
-		panic(err)
+		log.Println(err)
 	}
 
 
@@ -74,7 +77,53 @@ func Play(uri string)  {
 	for _, d := range devices {
 		if d.Name == os.Getenv("SPOTIFY_DEVICE") {
 			playlist := spotify.URI(uri)
-			client.PlayOpt(&spotify.PlayOptions{DeviceID: &d.ID, PlaybackContext: &playlist})
+
+			splitUri := strings.Split(uri, ":")
+			id := splitUri[len(splitUri)- 1]
+
+			log.Printf("id %v", id)
+			pl, err := client.GetPlaylist(spotify.ID(splitUri[len(splitUri)- 1]))
+
+			if err != nil {
+				log.Println(err)
+			}
+
+			log.Printf("%v tracks", pl.Tracks.Total)
+			offset := rand.Intn(pl.Tracks.Total)
+
+			var pbo *spotify.PlaybackOffset
+			if offset != 0 {
+				pbo = &spotify.PlaybackOffset{Position: offset}
+			}
+
+			log.Printf("playing %v", strconv.Itoa(offset))
+			err = client.PlayOpt(&spotify.PlayOptions{DeviceID: &d.ID, PlaybackContext: &playlist, PlaybackOffset: pbo})
+
+			if err != nil {
+				log.Println(err)
+			}
+		}
+	}
+}
+
+
+func PlaySingle(uri string)  {
+	devices, _ := client.PlayerDevices()
+	for _, d := range devices {
+		if d.Name == os.Getenv("SPOTIFY_DEVICE") {
+			song := spotify.URI(uri)
+			client.PlayOpt(&spotify.PlayOptions{DeviceID: &d.ID, URIs: []spotify.URI{song}})
+		}
+	}
+
+	t := time.Tick(5 * time.Second)
+
+	for {
+		<- t
+
+		state, _ := client.PlayerState()
+		if !state.Playing {
+			return
 		}
 	}
 }
