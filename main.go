@@ -64,7 +64,7 @@ func main()  {
 
 
 		go func() {
-			spotify.PlaySingle("spotify:episode:77GrIvPfFtiTgWhAynFmgj")
+			spotify.Play("spotify:playlist:7uXEbl8wLIX4glzFbNdKfV")
 
 			log.Println("song finished")
 

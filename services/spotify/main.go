@@ -104,6 +104,17 @@ func Play(uri string)  {
 			}
 		}
 	}
+
+	t := time.Tick(5 * time.Second)
+
+	for {
+		<- t
+
+		state, _ := client.PlayerState()
+		if !state.Playing {
+			return
+		}
+	}
 }
 
 
