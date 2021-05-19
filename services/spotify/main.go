@@ -72,7 +72,7 @@ func Get() *spotify.Client {
 	return client
 }
 
-func Play(uri string)  {
+func Play(uri string, mins int64)  {
 	devices, _ := client.PlayerDevices()
 	for _, d := range devices {
 		if d.Name == os.Getenv("SPOTIFY_DEVICE") {
@@ -105,16 +105,8 @@ func Play(uri string)  {
 		}
 	}
 
-	t := time.Tick(5 * time.Second)
-
-	for {
-		<- t
-
-		state, _ := client.PlayerState()
-		if !state.Playing {
-			return
-		}
-	}
+	t := time.Tick(time.Duration(mins) * time.Minute)
+	<- t
 }
 
 

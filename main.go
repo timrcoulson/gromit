@@ -56,7 +56,7 @@ func main()  {
 
 
 		// Start the morning playlist
-		spotify.Play(os.Getenv("MORNING_PLAYLIST"))
+		spotify.Play(os.Getenv("MORNING_PLAYLIST"), 20)
 	}
 
 	r.HandleFunc("/sleep", func(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +64,7 @@ func main()  {
 
 
 		go func() {
-			spotify.Play("spotify:playlist:7uXEbl8wLIX4glzFbNdKfV")
+			spotify.Play("spotify:playlist:37i9dQZF1DX9uKNf5jGX6m", 15)
 
 			log.Println("song finished")
 
@@ -80,7 +80,7 @@ func main()  {
 	r.HandleFunc("/morning", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Time to wake up!"))
 
-		wakeup()
+		go wakeup()
 	})
 
 	//agenda.Today()
