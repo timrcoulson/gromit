@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/olekukonko/tablewriter"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 )
@@ -38,6 +39,8 @@ func (m *Money) Output() string {
 	}
 	
 	resp, err := c.Get("https://api.starlingbank.com/api/v2/accounts")
+
+	log.Println(resp)
 
 	if err != nil {
 		panic(err)

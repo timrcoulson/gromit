@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 	"time"
@@ -73,6 +74,8 @@ func Get() *spotify.Client {
 }
 
 func Play(uri string, mins int64)  {
+	go exec.Command("killall", "-s", "9", "omxplayer.bin").Run()
+
 	devices, _ := client.PlayerDevices()
 	for _, d := range devices {
 		if d.Name == os.Getenv("SPOTIFY_DEVICE") {
@@ -107,10 +110,14 @@ func Play(uri string, mins int64)  {
 
 	t := time.Tick(time.Duration(mins) * time.Minute)
 	<- t
+
+	client.Pause()
 }
 
 
 func PlaySingle(uri string)  {
+	go exec.Command("killall", "-s", "9", "omxplayer.bin").Run()
+
 	devices, _ := client.PlayerDevices()
 	for _, d := range devices {
 		if d.Name == os.Getenv("SPOTIFY_DEVICE") {

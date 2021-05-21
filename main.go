@@ -5,6 +5,11 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"github.com/robfig/cron/v3"
+	"github.com/timrcoulson/gromit/agenda"
+	"github.com/timrcoulson/gromit/agenda/calendar"
+	"github.com/timrcoulson/gromit/agenda/gmail"
+	"github.com/timrcoulson/gromit/printer"
+	"github.com/timrcoulson/gromit/services/google"
 	"github.com/timrcoulson/gromit/services/spotify"
 	"log"
 	"math/rand"
@@ -24,26 +29,20 @@ func main()  {
 
 	// Authorise all the services
 	sp := spotify.New(host + "/auth/spotify")
-	//gg := google.New(host + "/auth/google")
+	gg := google.New("https://df387d88010c.ngrok.io" + "/auth/google")
 
+	log.Println(gg.LoginUrl())
 	// Init other stuff
-	//calendar.Init()
-	//gmail.Init()
+	calendar.Init()
+	gmail.Init()
 
 	r := mux.NewRouter()
-	//r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	//	w.Write([]byte(fmt.Sprintf(`
-	//	<h1>Gromit is running!</h1>
-	//	<a href="%s">Authorize Google</a>
-
-	//
-	//	`, gg.LoginUrl(), )))
-	//})
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(fmt.Sprintf(`
 		<h1>Gromit is running!</h1>
+		<a href="%s">Authorize Google</a>
 		<a href="%s">Authorize Spotify</a>
-		`, sp.LoginUrl())))
+		`, gg.LoginUrl(), sp.LoginUrl())))
 	})
 
 	wakeup := func() {
@@ -51,9 +50,6 @@ func main()  {
 		//printer.Print(agenda.Today())
 
 		log.Println("time to wake up")
-
-		go exec.Command("killall", "-s", "9", "omxplayer.bin").Run()
-
 
 		// Start the morning playlist
 		spotify.Play(os.Getenv("MORNING_PLAYLIST"), 20)
@@ -83,22 +79,18 @@ func main()  {
 		go wakeup()
 	})
 
-	//agenda.Today()
+	r.HandleFunc("/print", func(writer http.ResponseWriter, request *http.Request) {
+		writer.Write([]byte("printing"))
+		printer.Print(agenda.Today())
+	})
 
-	//r.HandleFunc("/spotify", func(writer http.ResponseWriter, request *http.Request) {
-
-	//})
-	//r.HandleFunc("/print", func(writer http.ResponseWriter, request *http.Request) {
-	//	writer.Write([]byte("printing"))
-	//	printer.Print(agenda.Today())
-	//})
-	//r.HandleFunc("/agenda", func(writer http.ResponseWriter, request *http.Request) {
-	//	writer.Write([]byte(agenda.Today()))
-	//})
+	r.HandleFunc("/agenda", func(writer http.ResponseWriter, request *http.Request) {
+		writer.Write([]byte(agenda.Today()))
+	})
 
 	// Register oauth 2 callbacks
 	r.HandleFunc("/auth/spotify", sp.Callback)
-	//r.HandleFunc("/auth/google", gg.Callback)
+	r.HandleFunc("/auth/google", gg.Callback)
 	//
 	http.Handle("/", r)
 
